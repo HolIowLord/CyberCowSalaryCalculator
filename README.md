@@ -24,9 +24,20 @@
 - 最小化到系统托盘：托盘图标可恢复窗口或退出
 - 重置今日数据：清空今日计时，保留薪资配置
 
-## 使用方式
+## 普通用户使用
 
-安装依赖：
+普通用户不需要安装 Node.js，也不需要运行开发命令。
+
+1. 打开 GitHub Release 页面
+2. 下载 `CyberCowSalaryCalculator.zip`
+3. 解压压缩包
+4. 运行 `CyberCowSalaryCalculator.exe`
+
+发布包说明见 [RELEASE.md](./RELEASE.md)。
+
+## 开发者使用
+
+如果你想基于源码继续开发、调试或自己打包，请先安装依赖：
 
 ```powershell
 npm.cmd install
@@ -45,8 +56,6 @@ npm.cmd run dist
 ```
 
 构建产物目录（如 `dist/`、`publish/`、`manual-release/`）不会进入 Git 仓库，需要在本机打包生成。
-
-给普通用户下载的解压即用版本应通过 GitHub Release 发布，详见 [RELEASE.md](./RELEASE.md)。
 
 ## 数据说明
 
