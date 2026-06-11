@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>赛博牛马薪资计算器</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-label="赛博牛马薪资计算器">
+      <section class="panel" aria-label="薪资计算面板">
+        <div class="desktop-controls" aria-label="窗口控制">
+          <button class="settings-button icon-button" id="settingsBtn" type="button" aria-label="打开设置" title="设置">⚙</button>
+          <button class="close-app-button" id="closeAppBtn" type="button" aria-label="关闭应用">×</button>
+        </div>
+
+        <div class="metrics">
+          <article>
+            <span>工作时长</span>
+            <strong id="durationText">00:00:00</strong>
+          </article>
+          <article>
+            <span>今日收入</span>
+            <strong id="earningsText">¥0.00</strong>
+          </article>
+        </div>
+
+        <div class="actions">
+          <button class="primary" id="clockInBtn" type="button">上班</button>
+          <button class="fish-button" id="fishLockBtn" type="button" aria-label="摸鱼锁屏" title="摸鱼锁屏">🐟</button>
+          <button id="clockOutBtn" type="button">下班</button>
+        </div>
+      </section>
+
+      <section class="settings-panel" id="settingsPanel" aria-label="设置" aria-hidden="true">
+        <div class="settings-card">
+          <div class="settings-view active" id="settingsHomeView">
+            <div class="settings-head">
+              <h1>设置</h1>
+              <button class="icon-button" id="closeSettingsBtn" type="button" aria-label="关闭设置">×</button>
+            </div>
+
+            <button class="menu-button" id="salarySettingsBtn" type="button">
+              <span>
+                <strong>薪资设置</strong>
+                <small id="salarySummaryText">自动计算时薪</small>
+              </span>
+              <b aria-hidden="true">›</b>
+            </button>
+
+            <div class="settings-section compact-section">
+              <div>
+                <h2>隐私模式</h2>
+                <p>开启后，薪资会非明文显示，防止敏感。</p>
+              </div>
+              <label class="switch" for="privacyMode">
+                <input id="privacyMode" type="checkbox" />
+                <span></span>
+              </label>
+            </div>
+
+            <div class="settings-section">
+              <h2>数据管理</h2>
+              <button class="danger-button" id="resetTodayBtn" type="button">重置今日数据</button>
+            </div>
+          </div>
+
+          <div class="settings-view" id="salarySettingsView">
+            <div class="settings-head">
+              <button class="back-button" id="backSettingsBtn" type="button">返回</button>
+              <h1>薪资构成</h1>
+              <button class="icon-button" id="closeSalarySettingsBtn" type="button" aria-label="关闭设置">×</button>
+            </div>
+
+            <div class="settings-section">
+              <h2>工作时间</h2>
+              <div class="time-grid">
+                <label class="input-row" for="workStartTime">
+                  <span>上班</span>
+                  <input id="workStartTime" type="time" />
+                </label>
+                <label class="input-row" for="workEndTime">
+                  <span>下班</span>
+                  <input id="workEndTime" type="time" />
+                </label>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h2>收入构成</h2>
+              <label class="input-row" for="monthlySalary">
+                <span>底薪</span>
+                <input id="monthlySalary" type="number" min="0" step="100" inputmode="decimal" />
+              </label>
+              <label class="input-row" for="overtimeRate">
+                <span>加班/h</span>
+                <input id="overtimeRate" type="number" min="0" step="10" inputmode="decimal" />
+              </label>
+              <label class="input-row" for="performancePay">
+                <span>绩效</span>
+                <input id="performancePay" type="number" min="0" step="100" inputmode="decimal" />
+              </label>
+              <label class="input-row" for="bonusPay">
+                <span>奖金</span>
+                <input id="bonusPay" type="number" min="0" step="100" inputmode="decimal" />
+              </label>
+              <p class="calculated-rate">
+                自动折算时薪：<strong id="hourlyRateText">¥0.00/小时</strong>
+              </p>
+              <p class="calculated-rate">
+                超出设定工作时长后，加班部分按 <strong id="overtimeRateText">¥0.00/小时</strong> 计算。
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="exit-dialog" id="exitDialog" aria-label="退出选项" aria-hidden="true">
+        <div class="exit-card">
+          <div class="exit-head">
+            <button class="icon-button" id="cancelExitBtn" type="button" aria-label="取消关闭">×</button>
+          </div>
+          <div class="exit-options">
+            <button id="quitAndClearBtn" type="button">关闭</button>
+            <button class="primary" id="hideBackgroundBtn" type="button">最小化</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

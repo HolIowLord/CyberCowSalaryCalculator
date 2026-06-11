@@ -1,0 +1,513 @@
+:root {
+  color-scheme: light;
+  --metric-number-size: clamp(22px, 6.6vw, 34px);
+  --ink: #17201c;
+  --muted: #66736b;
+  --line: #d6ddd4;
+  --accent: #1f8a70;
+  --accent-dark: #126752;
+  --gold: #e4a42d;
+  font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(228, 164, 45, 0.18), transparent 18rem),
+    linear-gradient(135deg, #edf4ec 0%, #f9fbf6 52%, #e8f1ee 100%);
+  color: var(--ink);
+}
+
+body.desktop-shell {
+  background: transparent;
+  cursor: grab;
+  user-select: none;
+}
+
+body.desktop-shell.window-dragging {
+  cursor: grabbing;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.app-shell {
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
+}
+
+.panel,
+.settings-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 18px 50px rgba(52, 74, 63, 0.14);
+  backdrop-filter: blur(18px);
+}
+
+.panel {
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.desktop-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.settings-button,
+.close-app-button {
+  width: 34px;
+  min-height: 34px;
+  padding: 0;
+  font-size: 13px;
+}
+
+.settings-button {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.close-app-button {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+  min-height: 0;
+}
+
+.metrics article {
+  min-width: 0;
+  padding: clamp(10px, 3.5vw, 14px);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfdfa;
+}
+
+.metrics span,
+.input-row span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.metrics strong {
+  display: block;
+  margin-top: 6px;
+  overflow: hidden;
+  font-size: var(--metric-number-size);
+  line-height: 1;
+  letter-spacing: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.actions,
+.settings-head,
+.input-row,
+.compact-section {
+  display: flex;
+  align-items: center;
+}
+
+.actions {
+  gap: 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 52px minmax(0, 1fr);
+}
+
+.fish-button {
+  width: 52px;
+  min-width: 52px;
+  padding: 0;
+  font-size: 22px;
+}
+
+.settings-panel {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  pointer-events: none;
+  background: rgba(23, 32, 28, 0);
+  opacity: 0;
+  transition:
+    opacity 160ms ease,
+    background 160ms ease;
+}
+
+.exit-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 14px;
+  pointer-events: none;
+  background: rgba(23, 32, 28, 0);
+  opacity: 0;
+  transition:
+    opacity 160ms ease,
+    background 160ms ease;
+}
+
+.exit-dialog.open {
+  pointer-events: auto;
+  background: rgba(23, 32, 28, 0.28);
+  opacity: 1;
+}
+
+.exit-card {
+  width: min(100%, 360px);
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 18px 50px rgba(52, 74, 63, 0.18);
+  backdrop-filter: blur(18px);
+}
+
+.exit-head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.exit-options {
+  display: grid;
+  gap: 8px;
+}
+
+.settings-panel.open {
+  pointer-events: auto;
+  background: rgba(23, 32, 28, 0.28);
+  opacity: 1;
+}
+
+.settings-card {
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  padding: 16px;
+  overflow: auto;
+  overflow-x: hidden;
+  transform: translateY(12px);
+  transition: transform 160ms ease;
+}
+
+.settings-panel.open .settings-card {
+  transform: translateY(0);
+}
+
+.settings-view {
+  display: none;
+}
+
+.settings-view.active {
+  display: block;
+}
+
+.settings-head {
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: 0;
+}
+
+.icon-button {
+  width: 38px;
+  min-height: 38px;
+  padding: 0;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.back-button {
+  width: auto;
+  min-height: 38px;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.menu-button {
+  min-width: 0;
+  min-height: 64px;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 12px 14px;
+  text-align: left;
+}
+
+.menu-button,
+.menu-button span {
+  display: flex;
+  align-items: center;
+}
+
+.menu-button span {
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.menu-button strong {
+  font-size: 16px;
+}
+
+.menu-button small {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-button b {
+  color: var(--accent-dark);
+  font-size: 30px;
+  line-height: 1;
+}
+
+.settings-section {
+  min-width: 0;
+  overflow: hidden;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfdfa;
+}
+
+.settings-section + .settings-section {
+  margin-top: 10px;
+}
+
+.settings-section h2 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  letter-spacing: 0;
+}
+
+.time-grid,
+.salary-grid-placeholder {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+/* 问题记录：原生 time 输入框带有浏览器内部的时间选择图标和最小宽度，
+   某些浏览器里可能撑开卡片。这里保留原生控件可用性，只约束外层列宽。 */
+.time-grid .input-row {
+  width: 100%;
+  min-width: 0;
+  margin-top: 0;
+}
+
+.input-row {
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.input-row + .input-row {
+  margin-top: 8px;
+}
+
+.input-row span {
+  width: 58px;
+  flex: 0 0 auto;
+}
+
+.time-grid .input-row span {
+  width: 36px;
+}
+
+.input-row input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 800;
+  background: transparent;
+}
+
+.input-row input[type="time"] {
+  text-align: center;
+  font-size: 16px;
+}
+
+.calculated-rate {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.calculated-rate strong {
+  color: var(--accent-dark);
+}
+
+.compact-section {
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.compact-section h2 {
+  margin-bottom: 4px;
+}
+
+.compact-section p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.switch {
+  flex: 0 0 auto;
+  position: relative;
+  width: 52px;
+  height: 30px;
+}
+
+.switch input {
+  position: absolute;
+  opacity: 0;
+}
+
+.switch span {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #e9eee7;
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.switch span::after {
+  content: "";
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(23, 32, 28, 0.18);
+  transition: transform 160ms ease;
+}
+
+.switch input:checked + span {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.switch input:checked + span::after {
+  transform: translateX(22px);
+}
+
+button {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  font-weight: 900;
+  cursor: pointer;
+  background: #ffffff;
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease,
+    background 140ms ease;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(23, 32, 28, 0.1);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+button.primary {
+  border-color: var(--accent);
+  color: #ffffff;
+  background: var(--accent);
+}
+
+button.danger-button {
+  border-color: rgba(190, 47, 47, 0.28);
+  color: #9f2d2d;
+}
+
+button.danger-button:hover:not(:disabled) {
+  border-color: rgba(190, 47, 47, 0.4);
+  box-shadow: 0 8px 18px rgba(190, 47, 47, 0.12);
+}
+
+@media (max-width: 380px) {
+  .panel,
+  .settings-card {
+    padding: 12px;
+  }
+
+  .metrics {
+    gap: 8px;
+  }
+
+  .metrics strong {
+    font-size: clamp(20px, 6vw, 26px);
+  }
+
+  .time-grid {
+    grid-template-columns: 1fr;
+  }
+}

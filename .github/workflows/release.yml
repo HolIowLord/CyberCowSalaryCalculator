@@ -1,0 +1,74 @@
+name: Build Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Windows package
+        shell: pwsh
+        run: |
+          $env:HTTP_PROXY=""
+          $env:HTTPS_PROXY=""
+          $env:ALL_PROXY=""
+          npm.cmd run dist
+
+      - name: Prepare zip package
+        shell: pwsh
+        run: |
+          $releaseRoot = "github-release"
+          $appDir = Join-Path $releaseRoot "CyberCowSalaryCalculator"
+          New-Item -ItemType Directory -Force -Path $releaseRoot | Out-Null
+          if (Test-Path $appDir) {
+            Remove-Item $appDir -Recurse -Force
+          }
+          Copy-Item "dist\win-unpacked" $appDir -Recurse -Force
+
+          $newExe = Join-Path $appDir "CyberCowSalaryCalculator.exe"
+          $sourceExe = Get-ChildItem $appDir -Filter "*.exe" -File | Select-Object -First 1
+          if ($sourceExe -and $sourceExe.FullName -ne $newExe) {
+            Rename-Item $sourceExe.FullName "CyberCowSalaryCalculator.exe" -Force
+          }
+
+          $localesDir = Join-Path $appDir "locales"
+          if (Test-Path $localesDir) {
+            Get-ChildItem $localesDir -File |
+              Where-Object { $_.Name -notin @("zh-CN.pak", "en-US.pak") } |
+              Remove-Item -Force
+          }
+
+          $zipPath = Join-Path $releaseRoot "CyberCowSalaryCalculator.zip"
+          if (Test-Path $zipPath) {
+            Remove-Item $zipPath -Force
+          }
+          Compress-Archive -LiteralPath $appDir -DestinationPath $zipPath -CompressionLevel Optimal
+
+      - name: Upload zip artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CyberCowSalaryCalculator
+          path: github-release/CyberCowSalaryCalculator.zip
+
+      - name: Upload GitHub release asset
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: github-release/CyberCowSalaryCalculator.zip
