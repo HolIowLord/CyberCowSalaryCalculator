@@ -181,6 +181,7 @@ function loadState() {
   const fallback = {
     date: todayKey(),
     workedMs: 0,
+    paidMs: 0,
     activeStartedAt: null,
     salary: {
       workStart: "08:00",
@@ -213,6 +214,7 @@ function normalizeState(nextState) {
   const baseState = {
     date: todayKey(),
     workedMs: 0,
+    paidMs: 0,
     activeStartedAt: null,
     salary,
     privacyMode: Boolean(nextState.privacyMode),
@@ -226,6 +228,7 @@ function normalizeState(nextState) {
     ...baseState,
     date: nextState.date,
     workedMs: Number(nextState.workedMs) || 0,
+    paidMs: normalizePaidMs(nextState, salary),
     activeStartedAt: nextState.activeStartedAt ? Number(nextState.activeStartedAt) : null,
   };
 }
@@ -245,6 +248,16 @@ function normalizeSalary(nextState) {
   };
 }
 
+function normalizePaidMs(nextState, salary) {
+  const paidMs = Number(nextState.paidMs);
+  if (Number.isFinite(paidMs) && paidMs >= 0) {
+    return paidMs;
+  }
+
+  const standardMs = Math.max(1, getTimeRangeMinutes(salary.workStart, salary.workEnd)) * 60000;
+  return Math.min(Number(nextState.workedMs) || 0, standardMs);
+}
+
 function ensureToday() {
   state = normalizeState(state);
 }
@@ -256,7 +269,9 @@ function saveState() {
 function stopActiveWork() {
   if (!state.activeStartedAt) return;
 
-  state.workedMs += Date.now() - state.activeStartedAt;
+  const now = Date.now();
+  state.workedMs += now - state.activeStartedAt;
+  state.paidMs += getPayableMsForInterval(state.activeStartedAt, now);
   state.activeStartedAt = null;
 }
 
@@ -293,6 +308,7 @@ function hideToBackground() {
 
 function resetTodayData() {
   state.workedMs = 0;
+  state.paidMs = 0;
   state.activeStartedAt = null;
   state.date = todayKey();
   saveState();
@@ -316,8 +332,46 @@ function getWorkedMs() {
   return state.workedMs + activeMs;
 }
 
+function getPaidMs() {
+  ensureToday();
+  const activePaidMs = state.activeStartedAt
+    ? getPayableMsForInterval(state.activeStartedAt, Date.now())
+    : 0;
+  return state.paidMs + activePaidMs;
+}
+
 function getDailyStandardMs() {
   return Math.max(1, getTimeRangeMinutes(state.salary.workStart, state.salary.workEnd)) * 60000;
+}
+
+function getPayableMsForInterval(startMs, endMs) {
+  const elapsedMs = Math.max(0, endMs - startMs);
+  if (elapsedMs === 0) return 0;
+  if (state.salary.overtimeRate > 0) return elapsedMs;
+
+  const workWindow = getWorkWindowMs(startMs);
+  return getOverlapMs(startMs, endMs, workWindow.start, workWindow.end);
+}
+
+function getWorkWindowMs(referenceMs) {
+  const reference = new Date(referenceMs);
+  const dayStart = new Date(
+    reference.getFullYear(),
+    reference.getMonth(),
+    reference.getDate(),
+  ).getTime();
+  const start = dayStart + timeToMinutes(state.salary.workStart) * 60000;
+  let end = dayStart + timeToMinutes(state.salary.workEnd) * 60000;
+
+  if (end <= start) {
+    end += 86400000;
+  }
+
+  return { start, end };
+}
+
+function getOverlapMs(startA, endA, startB, endB) {
+  return Math.max(0, Math.min(endA, endB) - Math.max(startA, startB));
 }
 
 function getMonthlyStandardHours(startTime, endTime) {
@@ -339,9 +393,10 @@ function getTodayEarnings(workedMs) {
 
 function render() {
   const workedMs = getWorkedMs();
+  const earningMs = state.salary.overtimeRate > 0 ? workedMs : getPaidMs();
   const isWorking = Boolean(state.activeStartedAt);
   const hourlyRate = getHourlyRate();
-  const earnings = getTodayEarnings(workedMs);
+  const earnings = getTodayEarnings(earningMs);
 
   elements.durationText.textContent = formatDuration(workedMs);
   elements.earningsText.textContent = state.privacyMode ? "****" : formatMoney(earnings);
