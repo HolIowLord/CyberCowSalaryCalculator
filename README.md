@@ -32,7 +32,7 @@
 1. 打开 GitHub Release 页面
 2. 下载 `CyberCowSalaryCalculator.zip`
 3. 解压压缩包
-4. 运行 `CyberCowSalaryCalculator.exe`
+4. 运行解压出来的 `CyberCowSalaryCalculator.exe`
 
 发布包说明见 [RELEASE.md](./RELEASE.md)。
 

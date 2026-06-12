@@ -45,5 +45,4 @@ publish\CyberCowSalaryCalculator.zip
 用户下载 `CyberCowSalaryCalculator.zip` 后：
 
 1. 解压 zip
-2. 打开 `CyberCowSalaryCalculator` 文件夹
-3. 运行 `CyberCowSalaryCalculator.exe`
+2. 运行解压出来的 `CyberCowSalaryCalculator.exe`
